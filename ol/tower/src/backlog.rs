@@ -89,7 +89,16 @@ pub fn submit_proof_by_number(
 ) -> Result<(), TxError> {
     // Getting remote miner state
     // there may not be any onchain state.
-    let (remote_height, _proofs_in_epoch) = get_remote_tower_height(tx_params)?;
+    let (mut remote_height, mut _proofs_in_epoch): (i64, i64) = (0, 0);
+    match get_remote_tower_height(&tx_params) {
+      Ok((height, proofs)) => {
+          remote_height = height;
+          _proofs_in_epoch = proofs;
+      }
+      Err(_) => {
+          remote_height = 0;
+      }
+    }
 
     info!("Remote tower height: {}", remote_height);
     // Getting local state height
